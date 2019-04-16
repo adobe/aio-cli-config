@@ -1,8 +1,8 @@
 {
-  "name": "aio-config",
-  "version": "1.0.0",
+  "name": "aio-cli-config",
+  "version": "1.0.0-rc1",
   "description": "Adobe I/O configuration module for the AIO CLI",
-  "main": "./src",
+  "main": "./lib",
   "repository": "https://github.com/adobe/aio-config",
   "author": "rudd@adobe.com",
   "license": "Apache-2.0",
@@ -14,6 +14,7 @@
     "test": "eslint . && jest  --coverage"
   },
   "dependencies": {
+    "hjson": "^3.1.2",
     "js-yaml": "^3.13.0"
   },
   "devDependencies": {
