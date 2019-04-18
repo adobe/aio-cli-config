@@ -1,5 +1,5 @@
 {
-  "name": "aio-cli-config",
+  "name": "@adobe/aio-cli-config",
   "version": "1.0.0-rc1",
   "description": "Adobe I/O configuration module for the AIO CLI",
   "main": "./lib",

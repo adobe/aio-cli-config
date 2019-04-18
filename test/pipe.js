@@ -11,7 +11,7 @@ describe('piped data', () => {
 
   test('should parse piped data', (done) => {
     pipe().then(res => {
-      expect(res).toEqual({ foo: 'bar' })
+      expect(res).toEqual('{"foo": "bar"}')
       done()
     }).catch(done.fail)
 

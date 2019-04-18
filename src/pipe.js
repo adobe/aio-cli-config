@@ -10,7 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const yaml = require('js-yaml')
 const status = Symbol.for(`aio-cli-config.pipe`)
 
 /**
@@ -25,11 +24,6 @@ module.exports = () => new Promise((resolve) => {
 
   process.stdin.once('end', () => {
     let result = data.join('')
-    if (data.length > 0) {
-      try {
-        result = yaml.safeLoad(result)
-      } catch (e) { }
-    }
     global[status] = result
     resolve(result)
   })

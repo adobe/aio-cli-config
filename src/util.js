@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const fs = require('fs')
 const path = require('path')
 const yaml = require('js-yaml')
+const hjson = require('hjson')
 
 /**
  * support for mkdir -p.
@@ -124,14 +125,22 @@ const shake = obj => {
 }
 
 /**
- * yaml deserialise from a file.
+ * deserialise from a file.
  *
  * @param {String} file
  *
  * @return {Object}
  */
-const loadYaml = (file) => {
-  return yaml.safeLoad(fs.readFileSync(file, 'utf-8'), { json: true }) || {}
+const loadFile = (file) => {
+  let contents = fs.readFileSync(file, 'utf-8')
+
+  if (contents.trim()[0] === '{') {
+    try {
+      return { values: hjson.parse(contents), format: 'json' }
+    } catch (e) { }
+  }
+
+  return { values: yaml.safeLoad(contents, { json: true }) || {}, format: 'yaml' }
 }
 
 /**
@@ -139,19 +148,25 @@ const loadYaml = (file) => {
  *
  * @param {String} file
  * @param {Object} obj
+ * @param {String} format
  */
-const saveYaml = (file, obj) => {
+const saveFile = (file, obj, format) => {
   obj = obj || {}
   mkdirp(path.dirname(file))
 
   obj = shake(obj)
 
-  // if empty object just save empty string
-  let str = yaml.safeDump(obj, { sortKeys: true, lineWidth: 1024, noCompatMode: true })
-  if (Object.keys(obj).length === 0) str = ''
+  let str
+  if (Object.keys(obj).length === 0) {
+    str = ''
+  } else if (format === 'json') {
+    str = hjson.stringify(obj, { condense: true, emitRootBraces: false, separator: true, bracesSameLine: true, multiline: 'off' })
+  } else {
+    str = yaml.safeDump(obj, { sortKeys: true, lineWidth: 1024, noCompatMode: true })
+  }
 
   fs.writeFileSync(file, str)
   return true
 }
 
-module.exports = { mkdirp, getValue, setValue, merge, loadYaml, saveYaml }
+module.exports = { mkdirp, getValue, setValue, merge, loadFile, saveFile }

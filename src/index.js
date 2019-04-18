@@ -12,6 +12,7 @@ governing permissions and limitations under the License.
 
 const Config = require('./Config')
 const pipe = require('./pipe')
+const dotenv = require('./dotenv')
 
 module.exports = {
   load: (debugFn) => {
@@ -25,5 +26,6 @@ module.exports = {
       return this
     })()
   },
-  getPipedData: pipe
+  getPipedData: pipe,
+  dotenv
 }

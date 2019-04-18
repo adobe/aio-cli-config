@@ -47,8 +47,8 @@ describe('Config', () => {
   test('should initialise values', () => {
     let config = new Config()
     expect(config.values).toEqual({})
-    expect(config.global).toEqual({ values: {}, file: path.resolve('/Users/foo/.config/aio') })
-    expect(config.local).toEqual({ values: {}, file: path.resolve('/Project/runtime/.aio') })
+    expect(config.global).toEqual({ file: path.resolve('/Users/foo/.config/aio') })
+    expect(config.local).toEqual({ file: path.resolve('/Project/runtime/.aio') })
     expect(config.envs).toEqual({ })
   })
 
@@ -124,6 +124,11 @@ describe('Config', () => {
       jest.clearAllMocks()
     })
 
+    afterAll(() => {
+      fs.unlinkSync('/Project/runtime/.aio')
+      fs.unlinkSync('/Users/foo/.config/aio')
+    })
+
     test('should set global value if key empty', () => {
       expect(config.set()).toBe(config)
       expect(config.set('')).toBe(config)
@@ -155,8 +160,10 @@ describe('Config', () => {
   describe('envs', () => {
     test('should set value from env', () => {
       process.env['AIO_PGB_AUTHTOKEN'] = 12
+      process.env['AIO_RUNTIME'] = 12
+      process.env['AIOBAD'] = 12
       let config = new Config()
-      expect(config.get().pgb.authtoken).toBe('12')
+      expect(config.get()).toEqual({ 'pgb': { 'authtoken': '12' }, 'runtime': '12' })
     })
 
     test('should override local and global settings', () => {

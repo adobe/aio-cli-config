@@ -13,7 +13,7 @@ governing permissions and limitations under the License.
 const path = require('path')
 const os = require('os')
 const dotenv = require('./dotenv')
-const { merge, loadYaml, saveYaml, getValue, setValue } = require('./util')
+const { merge, loadFile, saveFile, getValue, setValue } = require('./util')
 
 /**
  * read a file and log exceptions to debug
@@ -24,7 +24,7 @@ const { merge, loadYaml, saveYaml, getValue, setValue } = require('./util')
 const readFile = (file, debugFn) => {
   let result = {}
   try {
-    result = loadYaml(file)
+    result = loadFile(file)
     debugFn(`reading config: ${file}`)
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
@@ -50,16 +50,16 @@ class Config {
   reload() {
     dotenv(this._debugFn)
 
-    this.global.values = Object.freeze(readFile(this.global.file, this._debugFn))
-    this.local.values = Object.freeze(readFile(this.local.file, this._debugFn))
+    this.global = { ...this.global, ...readFile(this.global.file, this._debugFn) }
+    this.local = { ...this.local, ...readFile(this.local.file, this._debugFn) }
 
     this.envs = {}
 
     let envKeys = []
     for (let key in process.env) {
-      let match = key.match(/AIO_([^_]*)_(.*)/i)
+      let match = key.match(/^AIO_(.+)/i)
       if (match) {
-        let newKey = `${match[1].toLowerCase()}.${match[2].toLowerCase()}`
+        let newKey = `${match[1].toLowerCase().split('_').join('.')}`
         envKeys.push(newKey)
         this.envs = setValue(newKey, process.env[key], this.envs)
       }
@@ -91,12 +91,12 @@ class Config {
   }
 
   set(key, value, local = false) {
-    let toSave = setValue(key, value, (local) ? this.local.values : this.global.values)
-    let file = (local) ? this.local.file : this.global.file
+    let file = (local) ? this.local : this.global
+    let toSave = setValue(key, value, file.values)
 
-    this._debugFn(`writing config: ${file}`)
+    this._debugFn(`writing config: ${file.file}`)
 
-    saveYaml(file, toSave)
+    saveFile(file.file, toSave, file.format)
     return this.reload()
   }
 }

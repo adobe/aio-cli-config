@@ -10,66 +10,83 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { mkdirp, merge, getValue, setValue, loadYaml, saveYaml } = require('../src/util')
+const { mkdirp, merge, getValue, setValue, loadFile, saveFile } = require('../src/util')
 const path = require('path')
 jest.mock('jest-plugin-fs/mock')
 const fs = require('fs')
+const hjson = require('hjson')
 
 afterEach(() => {
   jest.clearAllMocks()
 })
 
-describe('loadYaml', () => {
+describe('loadFile', () => {
   test('is a function', () => {
-    expect(loadYaml).toBeInstanceOf(Function)
+    expect(loadFile).toBeInstanceOf(Function)
   })
 
   test('should return yaml parsed output', () => {
     fs.existsSync.mockImplementationOnce(() => true)
     fs.readFileSync.mockImplementationOnce(() => { return 'a: 12' })
-    expect(loadYaml('/file.yaml')).toEqual({ a: 12 })
+    expect(loadFile('/file.yaml')).toEqual({ values: { a: 12 }, format: 'yaml' })
+    expect(fs.readFileSync).toHaveBeenLastCalledWith('/file.yaml', 'utf-8')
+  })
+
+  test('should return json parsed output if json', () => {
+    fs.existsSync.mockImplementationOnce(() => true)
+    fs.readFileSync.mockImplementationOnce(() => { return '{ a: 12 }' })
+    expect(loadFile('/file.yaml')).toEqual({ values: { a: 12 }, format: 'json' })
     expect(fs.readFileSync).toHaveBeenLastCalledWith('/file.yaml', 'utf-8')
   })
 
   test('should return {} if yaml parsing returns null', () => {
     fs.existsSync.mockImplementationOnce(() => true)
     fs.readFileSync.mockImplementationOnce(() => { return '' })
-    expect(loadYaml('/notfound')).toEqual({})
+    expect(loadFile('/notfound')).toEqual({ values: { }, format: 'yaml' })
   })
 })
 
-describe('saveYaml', () => {
+describe('saveFile', () => {
   test('is a function', () => {
-    expect(saveYaml).toBeInstanceOf(Function)
+    expect(saveFile).toBeInstanceOf(Function)
   })
 
   test('should default to empty object if null / undefined', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveYaml('/a/b/c/file.yaml', null)
+    saveFile('/a/b/c/file.yaml', null)
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', '')
   })
 
   test('should default to empty object if empty', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveYaml('/a/b/c/file.yaml', {})
+    saveFile('/a/b/c/file.yaml', {})
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', '')
   })
 
   test('should save yaml stringified output', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveYaml('/a/b/c/file.yaml', { a: 12 })
+    saveFile('/a/b/c/file.yaml', { a: 12 })
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\n')
+  })
+
+  test('should save json stringified output', () => {
+    fs.writeFileSync.mockImplementationOnce(() => true)
+    saveFile('/a/b/c/file.json', { a: 12 }, 'json')
+    expect(fs.writeFileSync).toHaveBeenLastCalledWith(
+      '/a/b/c/file.json',
+      hjson.stringify({ a: 12 }, { condense: true, emitRootBraces: false, separator: true, bracesSameLine: true, multiline: 'off' })
+    )
   })
 
   test('should remove leaves', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveYaml('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: 1 } })
+    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: 1 } })
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\nb:\n  d: 1\n')
   })
 
   test('should remove null and empty leaves', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveYaml('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: null } })
+    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: null } })
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\n')
   })
 })
