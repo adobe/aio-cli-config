@@ -145,11 +145,11 @@ describe('Config', () => {
 
   describe('envs', () => {
     test('should set value from env', () => {
-      process.env['AIO_PGB_AUTHTOKEN'] = 12
+      process.env['AIO_PGB_AUTH__TOKEN'] = 12
       process.env['AIO_RUNTIME'] = 12
       process.env['AIOBAD'] = 12
       let config = new Config()
-      expect(config.get()).toEqual({ 'pgb': { 'authtoken': '12' }, 'runtime': '12' })
+      expect(config.get()).toEqual({ 'pgb': { 'auth_token': '12' }, 'runtime': '12' })
     })
 
     test('should override local and global settings', () => {

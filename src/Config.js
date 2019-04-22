@@ -57,7 +57,10 @@ class Config {
     for (let key in process.env) {
       let match = key.match(/^AIO_(.+)/i)
       if (match) {
-        let newKey = `${match[1].toLowerCase().split('_').join('.')}`
+        let newKey = match[1].toLowerCase()
+          .split(/(?<!_)_(?!_)/)
+          .join('.')
+          .replace('__', '_')
         envKeys.push(newKey)
         this.envs = setValue(newKey, process.env[key], this.envs)
       }
