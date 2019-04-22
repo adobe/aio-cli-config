@@ -10,8 +10,6 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const Config = require('../src/index.js')
-
 const mockGet = jest.fn(() => 12)
 const mockReload = jest.fn(() => true)
 const mockSet = jest.fn(() => true)
@@ -22,29 +20,20 @@ jest.mock('../src/Config', () => {
   })
 })
 
+const config = require('../src/index.js')
+
 afterEach(() => {
   jest.clearAllMocks()
 })
 
-let config
-
 describe('Index', () => {
-  test('should export a function', () => {
-    expect(typeof Config.load).toEqual('function')
-  })
-
-  test('load should return object', () => {
-    let config = Config.load('pgb')
+  test('should return object', () => {
     expect(typeof config.get).toEqual('function')
     expect(typeof config.set).toEqual('function')
     expect(typeof config.delete).toEqual('function')
   })
 
   describe('methods', () => {
-    beforeEach(() => {
-      config = Config.load()
-    })
-
     test('get without args', () => {
       config.get()
       expect(mockGet).toHaveBeenCalledWith(undefined)

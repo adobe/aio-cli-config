@@ -46,23 +46,8 @@ describe('Config', () => {
 
   test('should initialise values', () => {
     let config = new Config()
-    expect(config.values).toEqual({})
     expect(config.global).toEqual({ file: path.resolve('/Users/foo/.config/aio') })
     expect(config.local).toEqual({ file: path.resolve('/Project/runtime/.aio') })
-    expect(config.envs).toEqual({ })
-  })
-
-  describe('debug', () => {
-    test('should be an empty function', () => {
-      let config = new Config()
-      expect(typeof config._debugFn).toBe('function')
-    })
-
-    test('should be passed in function', () => {
-      let debug = () => true
-      let config = new Config(debug)
-      expect(config._debugFn).toBe(debug)
-    })
   })
 
   describe('load', () => {
@@ -107,6 +92,7 @@ describe('Config', () => {
     test('should return global value at key', () => {
       let config = new Config()
       config.envs = { a: { key: 'env' } }
+      config.values = {}
       expect(config.get('a.key', 'env')).toEqual('env')
     })
   })

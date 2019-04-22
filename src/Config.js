@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const path = require('path')
 const os = require('os')
 const dotenv = require('./dotenv')
+const debug = require('debug')('aio-cli-config')
 const { merge, loadFile, saveFile, getValue, setValue } = require('./util')
 
 /**
@@ -21,34 +22,31 @@ const { merge, loadFile, saveFile, getValue, setValue } = require('./util')
  * @param {String} file
  * @param {Function} debugFn
  */
-const readFile = (file, debugFn) => {
+const readFile = (file) => {
   let result = {}
   try {
     result = loadFile(file)
-    debugFn(`reading config: ${file}`)
+    debug(`reading config: ${file}`)
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
-      debugFn(ex.toString())
-      debugFn('skipping ...')
+      debug(ex.toString())
+      debug('skipping ...')
     }
   }
   return result
 }
 
 class Config {
-  constructor(debugFn) {
-    this._debugFn = (debugFn && debugFn.debug) || debugFn || (() => true)
+  constructor() {
     this.envs = {}
 
     const configBasePath = process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config')
     this.global = { file: process.env['AIO_CONFIG_FILE'] || path.join(configBasePath, 'aio') }
     this.local = { file: path.join(process.cwd(), '.aio') }
-
-    this.reload()
   }
 
   reload() {
-    dotenv(this._debugFn)
+    dotenv()
 
     this.global = { ...this.global, ...readFile(this.global.file, this._debugFn) }
     this.local = { ...this.local, ...readFile(this.local.file, this._debugFn) }
@@ -66,24 +64,24 @@ class Config {
     }
 
     if (envKeys.length > 0) {
-      this._debugFn(`reading env variables: ${envKeys.join(', ')}`)
+      debug(`reading env variables: ${envKeys.join(', ')}`)
     }
 
     this.values = merge(this.global.values, this.local.values, this.envs)
 
-    this._debugFn('AIO CLI CONFIGURATION -----------------------------------------')
-    this._debugFn(JSON.stringify(this.values, null, 2))
-    this._debugFn('---------------------------------------------------------------')
-
+    debug(JSON.stringify(this.values, null, 2))
     return this
   }
 
   get(key = '', source) {
+    this.values || this.reload()
     let vals = this.values
 
     if (source === 'global') vals = this.global.values
     else if (source === 'local') vals = this.local.values
     else if (source === 'env') vals = this.envs
+
+    debug(`reading config: ${key || '<all>'}`)
 
     let value = getValue(vals, key)
     if (value == null) return value
@@ -94,7 +92,7 @@ class Config {
     let file = (local) ? this.local : this.global
     let toSave = setValue(key, value, file.values)
 
-    this._debugFn(`writing config: ${file.file}`)
+    debug(`writing config: ${key || '<all>'} at ${file.file}`)
 
     saveFile(file.file, toSave, file.format)
     return this.reload()

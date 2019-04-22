@@ -13,19 +13,14 @@ governing permissions and limitations under the License.
 const Config = require('./Config')
 const pipe = require('./pipe')
 const dotenv = require('./dotenv')
+const config = new Config()
 
-module.exports = {
-  load: (debugFn) => {
-    return (() => {
-      const config = new Config(debugFn)
-
-      this.get = (key) => config.get(key)
-      this.set = (key, value) => config.set(key, value) && this
-      this.delete = (key) => config.set(key) && this
-      this.reload = () => config.reload() && this
-      return this
-    })()
-  },
-  getPipedData: pipe,
-  dotenv
-}
+module.exports = (() => {
+  this.get = (key) => config.get(key)
+  this.set = (key, value) => config.set(key, value) && this
+  this.delete = (key) => config.set(key) && this
+  this.reload = () => config.reload() && this
+  this.getPipedData = pipe
+  this.dotenv = dotenv
+  return this
+})()

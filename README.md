@@ -36,10 +36,7 @@ or
 Here is a snippet:
 
 ```javascript
-const Config = require('aio-cli-config')
-
-// load the data from disk and environmental variables with an optional debug function
-let config = Config.load(console.log)
+const config = require('aio-cli-config')
 
 // set a key value
 config.set('pgb.authtoken')

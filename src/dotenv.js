@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const fs = require('fs')
 const path = require('path')
 const status = Symbol.for(`aio-cli-config.dotenv`)
+const debug = require('debug')('aio-cli-config')
 
 /**
  * parse file for environmental variables
@@ -60,8 +61,7 @@ const diff = (o1, o2) => Object.keys(o1).filter(k => !(k in o2))
  * @param {Function} debug optional function for debugging
  *
  */
-module.exports = function(debugFn) {
-  debugFn = debugFn || this.debug || (() => true)
+module.exports = function() {
   const file = path.join(process.cwd(), '.env')
 
   if (!global[status]) {
@@ -69,21 +69,21 @@ module.exports = function(debugFn) {
       const envs = parse(file)
       const newKeys = diff(envs, process.env).sort()
 
-      debugFn(`loading environment variables from ${file}`)
+      debug(`loading environment variables from ${file}`)
 
       if (newKeys.length > 0) {
         process.env = { ...envs, ...process.env }
-        debugFn(`added environment variables: ${newKeys.join(', ')}`)
+        debug(`added environment variables: ${newKeys.join(', ')}`)
       } else {
-        debugFn(`no environment variables added`)
+        debug(`no environment variables added`)
       }
     } catch (ex) {
       if (ex.code === 'ENOENT') {
-        debugFn(`.env file not found, skipping ...`)
+        debug(`.env file not found, skipping ...`)
       } else {
-        debugFn(`cannot read environment variables from ${file}`)
-        debugFn(` - ${ex}`)
-        debugFn('skipping ...')
+        debug(`cannot read environment variables from ${file}`)
+        debug(` - ${ex}`)
+        debug('skipping ...')
       }
     }
   }
