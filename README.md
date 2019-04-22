@@ -39,7 +39,7 @@ Here is a snippet:
 const config = require('aio-cli-config')
 
 // set a key value
-config.set('pgb.authtoken')
+config.set('pgb.authtoken', 1234)
 
 // reload data from files and environmental variables
 config.reload()
@@ -87,9 +87,13 @@ Inheritance is similar to NPMRC and can be set using user file, project file and
 2. project config eg. $PWD/.aio
 3. environment variables matching AIO_\<PLUGIN>_\<KEY> 
 
-```javascript
+```bash
 $ AIO_PGB_AUTHTOKEN=1234 node
 > config.get('pgb.authtoken')
+1234
+
+$ AIO_PGB_AUTH__TOKEN=1234 node # use double underscores to specify an underscore
+> config.get('pgb.auth_token')
 1234
 ```
 
