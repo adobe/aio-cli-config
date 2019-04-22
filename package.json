@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aio-cli-config",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "description": "Adobe I/O configuration module for the AIO CLI",
   "main": "./lib",
   "repository": "https://github.com/adobe/aio-config",
@@ -10,7 +10,7 @@
     "node": ">=8.10.0"
   },
   "scripts": {
-    "build": "rm -rf ./lib && minify src -d lib",
+    "build": "yarn test && rm -rf ./lib && minify src -d lib",
     "test": "eslint . && jest  --coverage"
   },
   "dependencies": {
