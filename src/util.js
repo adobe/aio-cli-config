@@ -132,15 +132,24 @@ const shake = obj => {
  * @return {Object}
  */
 const loadFile = (file) => {
-  let contents = fs.readFileSync(file, 'utf-8')
+  let contents = fs.readFileSync(file, 'utf-8').trim()
 
-  if (contents.trim()[0] === '{') {
-    try {
-      return { values: hjson.parse(contents), format: 'json' }
-    } catch (e) { }
+  if (contents) {
+    if (contents.trim()[0] === '{') {
+      try {
+        return { values: hjson.parse(contents), format: 'json' }
+      } catch (e) {
+        throw new Error('Cannot parse json')
+      }
+    } else {
+      try {
+        return { values: yaml.safeLoad(contents, { json: true }), format: 'yaml' }
+      } catch (e) {
+        throw new Error('Cannot parse yaml')
+      }
+    }
   }
-
-  return { values: yaml.safeLoad(contents, { json: true }) || {}, format: 'yaml' }
+  return { values: {}, format: 'json' }
 }
 
 /**
@@ -160,7 +169,7 @@ const saveFile = (file, obj, format) => {
   if (Object.keys(obj).length === 0) {
     str = ''
   } else if (format === 'json') {
-    str = hjson.stringify(obj, { condense: true, emitRootBraces: false, separator: true, bracesSameLine: true, multiline: 'off' })
+    str = hjson.stringify(obj, { condense: true, emitRootBraces: true, separator: true, bracesSameLine: true, multiline: 'off' })
   } else {
     str = yaml.safeDump(obj, { sortKeys: true, lineWidth: 1024, noCompatMode: true })
   }

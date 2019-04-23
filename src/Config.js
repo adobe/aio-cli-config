@@ -23,14 +23,13 @@ const { merge, loadFile, saveFile, getValue, setValue } = require('./util')
  * @param {Function} debugFn
  */
 const readFile = (file) => {
+  debug(`reading config: ${file}`)
   let result = {}
   try {
     result = loadFile(file)
-    debug(`reading config: ${file}`)
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
       debug(ex.toString())
-      debug('skipping ...')
     }
   }
   return result

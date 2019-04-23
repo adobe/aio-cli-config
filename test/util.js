@@ -40,9 +40,18 @@ describe('loadFile', () => {
   })
 
   test('should return {} if yaml parsing returns null', () => {
-    fs.existsSync.mockImplementationOnce(() => true)
     fs.readFileSync.mockImplementationOnce(() => { return '' })
-    expect(loadFile('/notfound')).toEqual({ values: { }, format: 'yaml' })
+    expect(loadFile('/notfound')).toEqual({ values: { }, format: 'json' })
+  })
+
+  test('should throw json parsing error', () => {
+    fs.readFileSync.mockImplementationOnce(() => { return '{{{{{' })
+    expect(() => loadFile('/a.yaml')).toThrow(new Error('Cannot parse json'))
+  })
+
+  test('should throw yaml parsing error', () => {
+    fs.readFileSync.mockImplementationOnce(() => { return 'a\n:b:\n   y-' })
+    expect(() => loadFile('/a.yaml')).toThrow(new Error('Cannot parse yaml'))
   })
 })
 
