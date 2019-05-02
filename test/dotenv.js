@@ -13,6 +13,7 @@ governing permissions and limitations under the License.
 const dotenv = require('../src/dotenv')
 const fs = require('fs')
 const path = require('path')
+const os = require('os')
 const debug = require('debug').mock
 const status = Symbol.for('aio-cli-config.dotenv')
 let processenv, processcwd
@@ -89,21 +90,21 @@ describe('parse', () => {
   test('comment', () => {
     fs.writeFileSync('/project/.env', fixtureFile('comment'))
     dotenv()
-    expect(process.env).toEqual({ ...{ A: '#comment', B: '1', C: '12\n' }, ...processenv })
+    expect(process.env).toEqual({ ...{ A: '#comment', B: '1', C: `12${os.EOL}` }, ...processenv })
     expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
   })
 
   test('multiline', () => {
     fs.writeFileSync('/project/.env', fixtureFile('multiline'))
     dotenv()
-    expect(process.env).toEqual({ ...{ A: '\n12', B: '\n12', C: '1' }, ...processenv })
+    expect(process.env).toEqual({ ...{ A: `${os.EOL}12`, B: `${os.EOL}12`, C: '1' }, ...processenv })
     expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
   })
 
   test('quotes', () => {
     fs.writeFileSync('/project/.env', fixtureFile('quotes'))
     dotenv()
-    expect(process.env).toEqual({ ...{ A: "   12'  \n", B: '   12" \n', C: '  12  ' }, ...processenv })
+    expect(process.env).toEqual({ ...{ A: `   12'  ${os.EOL}`, B: `   12" ${os.EOL}`, C: '  12  ' }, ...processenv })
     expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
   })
 
