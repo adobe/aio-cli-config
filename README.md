@@ -17,7 +17,6 @@ aio-cli-config
 [![Version](https://img.shields.io/npm/v/@adobe/aio-cli-config.svg)](https://npmjs.org/package/@adobe/aio-cli-config)
 [![Downloads/week](https://img.shields.io/npm/dw/@adobe/aio-cli-config.svg)](https://npmjs.org/package/@adobe/aio-cli-config)
 [![Build Status](https://travis-ci.org/adobe/aio-cli-config.svg?branch=master)](https://travis-ci.org/adobe/aio-cli-config)
-[![Build status](https://ci.appveyor.com/api/projects/status/h13ptksv982vmonc?svg=true)](https://ci.appveyor.com/project/goya/aio-cli-config)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/aio-cli-plugin-pgb.svg)](https://greenkeeper.io/)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/adobe/aio-cli-config/master.svg?style=flat-square)](https://codecov.io/gh/adobe/aio-cli-config/)
 
