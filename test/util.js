@@ -74,7 +74,7 @@ describe('saveFile', () => {
 
   test('should save yaml stringified output', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveFile('/a/b/c/file.yaml', { a: 12 })
+    saveFile('/a/b/c/file.yaml', { a: 12 }, 'yaml')
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\n')
   })
 
@@ -89,13 +89,13 @@ describe('saveFile', () => {
 
   test('should remove leaves', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: 1 } })
+    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: 1 } }, 'yaml')
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\nb:\n  d: 1\n')
   })
 
   test('should remove null and empty leaves', () => {
     fs.writeFileSync.mockImplementationOnce(() => true)
-    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: null } })
+    saveFile('/a/b/c/file.yaml', { a: 12, b: { c: { }, d: null } }, 'yaml')
     expect(fs.writeFileSync).toHaveBeenLastCalledWith('/a/b/c/file.yaml', 'a: 12\n')
   })
 })

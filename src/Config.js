@@ -24,15 +24,14 @@ const { merge, loadFile, saveFile, getValue, setValue } = require('./util')
  */
 const readFile = (file) => {
   debug(`reading config: ${file}`)
-  let result = {}
   try {
-    result = loadFile(file)
+    return loadFile(file)
   } catch (ex) {
     if (ex.code !== 'ENOENT') {
       debug(ex.toString())
     }
   }
-  return result
+  return { source: 'json' }
 }
 
 class Config {
@@ -47,8 +46,8 @@ class Config {
   reload() {
     dotenv()
 
-    this.global = { ...this.global, ...readFile(this.global.file, this._debugFn) }
-    this.local = { ...this.local, ...readFile(this.local.file, this._debugFn) }
+    this.global = { ...this.global, ...readFile(this.global.file) }
+    this.local = { ...this.local, ...readFile(this.local.file) }
 
     this.envs = {}
 

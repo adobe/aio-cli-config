@@ -135,7 +135,7 @@ const loadFile = (file) => {
   let contents = fs.readFileSync(file, 'utf-8').trim()
 
   if (contents) {
-    if (contents.trim()[0] === '{') {
+    if (contents[0] === '{') {
       try {
         return { values: hjson.parse(contents), format: 'json' }
       } catch (e) {
