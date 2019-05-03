@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aio-cli-config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Adobe I/O configuration module for the AIO CLI",
   "main": "./src",
   "repository": "https://github.com/adobe/aio-config",
@@ -9,6 +9,9 @@
   "engines": {
     "node": ">=8.10.0"
   },
+  "files": [
+    "/src"
+  ],
   "scripts": {
     "test": "eslint . && jest  --coverage"
   },
