@@ -16,9 +16,9 @@ const dotenv = require('./dotenv')
 const config = new Config()
 
 module.exports = (() => {
-  this.get = (key) => config.get(key)
-  this.set = (key, value) => config.set(key, value) && this
-  this.delete = (key) => config.set(key) && this
+  this.get = (key, local) => config.get(key, local)
+  this.set = (key, value, local) => config.set(key, value, local) && this
+  this.delete = (key, local) => config.set(key, null, local) && this
   this.reload = () => config.reload() && this
   this.getPipedData = pipe
   this.dotenv = dotenv

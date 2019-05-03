@@ -36,32 +36,47 @@ describe('Index', () => {
   describe('methods', () => {
     test('get without args', () => {
       config.get()
-      expect(mockGet).toHaveBeenCalledWith(undefined)
+      expect(mockGet).toHaveBeenCalledWith(undefined, undefined)
     })
 
     test('get', () => {
       config.get('akey')
-      expect(mockGet).toHaveBeenCalledWith('akey')
+      expect(mockGet).toHaveBeenCalledWith('akey', undefined)
+    })
+
+    test('get local', () => {
+      config.get('akey', true)
+      expect(mockGet).toHaveBeenCalledWith('akey', true)
     })
 
     test('set', () => {
       expect(config.set('akey', { a: 12 })).toBe(config)
-      expect(mockSet).toHaveBeenCalledWith('akey', { a: 12 })
+      expect(mockSet).toHaveBeenCalledWith('akey', { a: 12 }, undefined)
     })
 
     test('set without key', () => {
       expect(config.set(undefined, { a: 12 })).toBe(config)
-      expect(mockSet).toHaveBeenCalledWith(undefined, { a: 12 })
+      expect(mockSet).toHaveBeenCalledWith(undefined, { a: 12 }, undefined)
+    })
+
+    test('set local', () => {
+      expect(config.set(undefined, { a: 12 }, true)).toBe(config)
+      expect(mockSet).toHaveBeenCalledWith(undefined, { a: 12 }, true)
     })
 
     test('delete', () => {
       expect(config.delete('akey')).toBe(config)
-      expect(mockSet).toHaveBeenCalledWith('akey')
+      expect(mockSet).toHaveBeenCalledWith('akey', null, undefined)
     })
 
     test('delete with no args', () => {
       expect(config.delete()).toBe(config)
-      expect(mockSet).toHaveBeenCalledWith(undefined)
+      expect(mockSet).toHaveBeenCalledWith(undefined, null, undefined)
+    })
+
+    test('delete local', () => {
+      expect(config.delete('akey', true)).toBe(config)
+      expect(mockSet).toHaveBeenCalledWith('akey', null, true)
     })
 
     test('reload', () => {
