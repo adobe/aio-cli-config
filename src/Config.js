@@ -31,7 +31,7 @@ const readFile = (file) => {
       debug(ex.toString())
     }
   }
-  return { source: 'json' }
+  return { format: 'json' }
 }
 
 class Config {
@@ -90,12 +90,12 @@ class Config {
   }
 
   set(key, value, local = false) {
-    let file = (local) ? this.local : this.global
-    let toSave = setValue(key, value, file.values)
+    let config = (local) ? this.local : this.global
+    let obj = setValue(key, value, config.values)
 
-    debug(`writing config: ${key || '<all>'} at ${file.file}`)
+    debug(`writing config: ${key || '<all>'} at ${config.file}`)
 
-    saveFile(file.file, toSave, file.format)
+    saveFile(config.file, obj, config.format)
     return this.reload()
   }
 }

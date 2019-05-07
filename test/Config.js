@@ -66,6 +66,13 @@ describe('Config', () => {
       expect(config.get('    ')).toEqual(config.values)
     })
 
+    test('should default to json storage', () => {
+      let config = new Config()
+      config.reload()
+      expect(config.global.format).toBe('json')
+      expect(config.local.format).toBe('json')
+    })
+
     test('should return undefined on unknown key', () => {
       let config = new Config()
       expect(config.get('unknown.key')).toEqual(undefined)
