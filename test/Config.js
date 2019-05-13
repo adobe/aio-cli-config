@@ -13,10 +13,13 @@ governing permissions and limitations under the License.
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
+const hjson = require('hjson')
 
 // mock dir stuff
 let processcwd = process.cwd
 let oshomedir = os.homedir
+
+let hjsonFormat = (obj) => hjson.stringify(obj, { condense: true, emitRootBraces: true, separator: true, bracesSameLine: true, multiline: 'off' })
 
 beforeAll(() => {
   os.homedir = () => path.resolve('/Users/foo')
@@ -132,20 +135,20 @@ describe('Config', () => {
 
     test('should save to global file', () => {
       expect(config.set('a.key', 'value1')).toBe(config)
-      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Users/foo/.config/aio'), 'a:\n  key: value1\n')
+      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Users/foo/.config/aio'), hjsonFormat({ a: { key: 'value1' } }))
       expect(config.get()).toEqual({ a: { key: 'value1' } })
     })
 
     test('should save to local file', () => {
       expect(config.set('a.key', 'value3', true)).toBe(config)
-      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Project/runtime/.aio'), 'a:\n  key: value3\n')
+      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Project/runtime/.aio'), hjsonFormat({ a: { key: 'value3' } }))
       expect(config.get()).toEqual({ a: { key: 'value3' } })
     })
 
     test('local values should have priority', () => {
       expect(config.set('a.key', 'local', true)).toBe(config)
       expect(config.set('a.key', 'global', false)).toBe(config)
-      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Project/runtime/.aio'), 'a:\n  key: local\n')
+      expect(fs.writeFileSync).toHaveBeenCalledWith(path.resolve('/Project/runtime/.aio'), hjsonFormat({ a: { key: 'local' } }))
       expect(config.get()).toEqual({ a: { key: 'local' } })
     })
   })

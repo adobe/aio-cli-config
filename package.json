@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aio-cli-config",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Adobe I/O configuration module for the AIO CLI",
   "main": "./src",
   "repository": "https://github.com/adobe/aio-config",

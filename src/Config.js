@@ -90,6 +90,8 @@ class Config {
   }
 
   set(key, value, local = false) {
+    this.values || this.reload()
+
     let config = (local) ? this.local : this.global
     let obj = setValue(key, value, config.values)
 
