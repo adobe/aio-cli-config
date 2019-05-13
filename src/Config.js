@@ -69,8 +69,6 @@ class Config {
     }
 
     this.values = merge(this.global.values, this.local.values, this.envs)
-
-    debug(JSON.stringify(this.values, null, 2))
     return this
   }
 
@@ -81,8 +79,6 @@ class Config {
     if (source === 'global') vals = this.global.values
     else if (source === 'local') vals = this.local.values
     else if (source === 'env') vals = this.envs
-
-    debug(`reading config: ${key || '<all>'}`)
 
     let value = getValue(vals, key)
     if (value == null) return value

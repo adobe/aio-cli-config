@@ -74,13 +74,9 @@ module.exports = function() {
       if (newKeys.length > 0) {
         process.env = { ...envs, ...process.env }
         debug(`added environment variables: ${newKeys.join(', ')}`)
-      } else {
-        debug(`no environment variables added`)
       }
     } catch (ex) {
-      if (ex.code === 'ENOENT') {
-        debug(`.env file not found, skipping ...`)
-      } else {
+      if (ex.code !== 'ENOENT') {
         debug(`cannot read environment variables from ${file}`)
         debug(` - ${ex}`)
         debug('skipping ...')

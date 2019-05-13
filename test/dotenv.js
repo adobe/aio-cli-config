@@ -40,7 +40,6 @@ test('is a function', () => expect(dotenv).toBeInstanceOf(Function))
 test('if file doesnt exist no change to process.env', () => {
   dotenv()
   expect(process.env).toEqual(processenv)
-  expect(debug).toHaveBeenLastCalledWith('.env file not found, skipping ...')
   expect(global[status]).toEqual(true)
 })
 
@@ -84,7 +83,6 @@ describe('parse', () => {
     fs.writeFileSync('/project/.env', fixtureFile('empty'))
     dotenv()
     expect(process.env).toEqual(processenv)
-    expect(debug).toHaveBeenLastCalledWith('no environment variables added')
   })
 
   test('comment', () => {
@@ -121,5 +119,4 @@ test('should not overwrite process.env values', () => {
   fs.writeFileSync('/project/.env', 'A=1')
   dotenv()
   expect(process.env['A']).toEqual('12')
-  expect(debug).toHaveBeenLastCalledWith('no environment variables added')
 })
