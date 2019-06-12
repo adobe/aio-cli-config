@@ -179,6 +179,18 @@ describe('merge', () => {
     expect(merge({ a: 1 }, { a: 2 }, { a: 3 })).toEqual({ a: 3 })
   })
 
+  test('overrides non object values 1', () => {
+    expect(merge({ b: 'a' }, { b: { foo: 'bar' } })).toEqual({ 'b': { 'foo': 'bar' } })
+  })
+
+  test('overrides non object values 2', () => {
+    expect(merge({ b: { foo: 'bar' } }, { b: 'a' })).toEqual({ 'b': 'a' })
+  })
+
+  test('overrides non object values 3', () => {
+    expect(merge({ foo: 'bar' }, { foo: { a: 12 } })).toEqual({ foo: { a: 12 } })
+  })
+
   test('replaces arrays', () => {
     expect(merge({ a: [] }, {})).toEqual({ a: [] })
     expect(merge({ a: [2] }, { a: [1] })).toEqual({ a: [1] })
