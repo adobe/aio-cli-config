@@ -85,7 +85,7 @@ let setValue = (key, value, obj) => {
  * @return {Object}
  */
 const merge = (...objs) => {
-  const isCloneable = obj => obj && typeof obj === 'object'
+  const isCloneable = obj => obj && obj.constructor === Object
 
   const clone = (source, dest) => {
     if (source == null) {

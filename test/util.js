@@ -199,6 +199,10 @@ describe('merge', () => {
   test('does nested merging', () => {
     expect(merge({ a: { c: [], b: 1 } }, { a: { b: 2 } }, { a: { c: 3 } })).toEqual({ a: { b: 2, c: 3 } })
   })
+
+  test('supports arrays properly', () => {
+    expect(merge({ foo: [4, 5, 6] }, { foo: { a: [1, 2, 3] } })).toEqual({ foo: { a: [1, 2, 3] } })
+  })
 })
 
 describe('mkdirp', () => {
