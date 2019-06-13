@@ -64,7 +64,7 @@ const diff = (o1, o2) => Object.keys(o1).filter(k => !(k in o2))
 module.exports = function() {
   const file = path.join(process.cwd(), '.env')
 
-  if (!global[status]) {
+  if (global[status] !== file) {
     try {
       const envs = parse(file)
       const newKeys = diff(envs, process.env).sort()
@@ -83,5 +83,5 @@ module.exports = function() {
       }
     }
   }
-  global[status] = true
+  global[status] = file
 }
