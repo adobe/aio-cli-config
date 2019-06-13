@@ -49,8 +49,9 @@ describe('Config', () => {
 
   test('should initialise values', () => {
     let config = new Config()
-    expect(config.global).toEqual({ file: path.resolve('/Users/foo/.config/aio') })
-    expect(config.local).toEqual({ file: path.resolve('/Project/runtime/.aio') })
+    config.reload()
+    expect(config.global).toEqual({ file: path.resolve('/Users/foo/.config/aio'), 'format': 'json' })
+    expect(config.local).toEqual({ file: path.resolve('/Project/runtime/.aio'), 'format': 'json' })
   })
 
   describe('load', () => {
@@ -89,13 +90,15 @@ describe('Config', () => {
 
     test('should return env value at key', () => {
       let config = new Config()
-      config.global.values = { a: { key: 'global2' } }
+      config.global = { values: { a: { key: 'global2' } } }
+      config.values = {}
       expect(config.get('a.key', 'global')).toEqual('global2')
     })
 
     test('should return local value at key', () => {
       let config = new Config()
-      config.local.values = { a: { key: 'local' } }
+      config.local = { values: { a: { key: 'local' } } }
+      config.values = {}
       expect(config.get('a.key', 'local')).toEqual('local')
     })
 
