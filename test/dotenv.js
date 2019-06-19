@@ -25,7 +25,7 @@ beforeAll(() => {
 beforeEach(() => {
   processenv = process.env
   processcwd = process.cwd
-  process.cwd = () => '/project'
+  process.cwd = () => path.resolve('/project')
 })
 
 afterEach(() => {
@@ -40,13 +40,13 @@ test('is a function', () => expect(dotenv).toBeInstanceOf(Function))
 test('if file doesnt exist no change to process.env', () => {
   dotenv()
   expect(process.env).toEqual(processenv)
-  expect(global[status]).toEqual('/project/.env')
+  expect(global[status]).toEqual(path.resolve('/project/.env'))
 })
 
 test('should set global symbol', () => {
   global[status] = true
   dotenv(debug)
-  expect(global[status]).toEqual('/project/.env')
+  expect(global[status]).toEqual(path.resolve('/project/.env'))
 })
 
 test('shouldnt do anything if global symbol is present', () => {
