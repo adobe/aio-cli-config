@@ -3,7 +3,7 @@
   "version": "1.0.10",
   "description": "Adobe I/O configuration module for the AIO CLI",
   "main": "./src",
-  "repository": "https://github.com/adobe/aio-config",
+  "repository": "https://github.com/adobe/aio-cli-config",
   "author": "rudd@adobe.com",
   "license": "Apache-2.0",
   "engines": {
