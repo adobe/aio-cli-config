@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 
 const fs = require('fs')
 const path = require('path')
-const status = Symbol.for(`aio-cli-config.dotenv`)
+const envFile = Symbol.for(`aio-cli-config.envfile`)
+const envVars = Symbol.for(`aio-cli-config.envVars`)
 const debug = require('debug')('aio-cli-config')
 
 /**
@@ -56,16 +57,29 @@ const parse = (file) => {
 const diff = (o1, o2) => Object.keys(o1).filter(k => !(k in o2))
 
 /**
+ * clears prviously hoisted environment variables from process.env
+ */
+const clear = () => {
+  let existingKeys = global[envVars]
+  if (existingKeys && existingKeys.forEach) {
+    for (let key of existingKeys) {
+      delete process.env[key]
+    }
+    delete global[envVars]
+  }
+}
+
+/**
  * hoists variables in the ./.env file to process.env
  *
  * @param {Function} debug optional function for debugging
  *
  */
-module.exports = function() {
+module.exports = function(force = false) {
   const file = path.join(process.cwd(), '.env')
-
-  if (global[status] !== file) {
+  if (force || global[envFile] !== file) {
     try {
+      clear()
       const envs = parse(file)
       const newKeys = diff(envs, process.env).sort()
 
@@ -73,7 +87,8 @@ module.exports = function() {
 
       if (newKeys.length > 0) {
         process.env = { ...envs, ...process.env }
-        debug(`added environment variables: ${newKeys.join(', ')}`)
+        debug(`added environment variable(s): ${newKeys.join(', ')}`)
+        global[envVars] = newKeys
       }
     } catch (ex) {
       if (ex.code !== 'ENOENT') {
@@ -83,5 +98,5 @@ module.exports = function() {
       }
     }
   }
-  global[status] = file
+  global[envFile] = file
 }
