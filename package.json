@@ -23,7 +23,7 @@
   "devDependencies": {
     "babel-runtime": "^6.26.0",
     "codecov": "^3.3.0",
-    "eslint": "^5.15.3",
+    "eslint": "^6.0.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jest": "^22.4.1",
