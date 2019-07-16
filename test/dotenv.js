@@ -55,14 +55,14 @@ test('should set global symbol', () => {
 })
 
 test('shouldnt do anything if global symbol is present', () => {
-  global[envFile] = '/project/.env'
+  global[envFile] = path.resolve('/project/.env')
   dotenv()
   expect(process.env).toEqual(processenv)
   expect(fs.readFileSync).not.toHaveBeenCalled()
 })
 
 test('shouldnt do anything if global symbol is present (unless forced)', () => {
-  global[envFile] = '/project/.env'
+  global[envFile] = path.resolve('/project/.env')
   dotenv(true)
   expect(process.env).toEqual(processenv)
   expect(fs.readFileSync).toHaveBeenCalled()
