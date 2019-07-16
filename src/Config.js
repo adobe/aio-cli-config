@@ -36,7 +36,7 @@ const readFile = (file) => {
 
 class Config {
   reload() {
-    dotenv()
+    dotenv(true)
 
     const configBasePath = process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config')
     this.global = { file: process.env['AIO_CONFIG_FILE'] || path.join(configBasePath, 'aio') }

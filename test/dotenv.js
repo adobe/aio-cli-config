@@ -15,8 +15,10 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const debug = require('debug').mock
-const status = Symbol.for('aio-cli-config.dotenv')
+const envFile = Symbol.for('aio-cli-config.envfile')
+const envVars = Symbol.for(`aio-cli-config.envVars`)
 let processenv, processcwd
+jest.spyOn(fs, 'readFileSync')
 
 beforeAll(() => {
   fs.mkdirSync('/project/')
@@ -32,7 +34,8 @@ afterEach(() => {
   jest.clearAllMocks()
   process.env = processenv
   process.cwd = processcwd
-  global[status] = undefined
+  delete global[envFile]
+  delete global[envVars]
 })
 
 test('is a function', () => expect(dotenv).toBeInstanceOf(Function))
@@ -40,20 +43,29 @@ test('is a function', () => expect(dotenv).toBeInstanceOf(Function))
 test('if file doesnt exist no change to process.env', () => {
   dotenv()
   expect(process.env).toEqual(processenv)
-  expect(global[status]).toEqual(path.resolve('/project/.env'))
+  expect(global[envFile]).toEqual(path.resolve('/project/.env'))
+  expect(fs.readFileSync).toHaveBeenCalled()
 })
 
 test('should set global symbol', () => {
-  global[status] = true
-  dotenv(debug)
-  expect(global[status]).toEqual(path.resolve('/project/.env'))
+  global[envFile] = undefined
+  dotenv()
+  expect(global[envFile]).toEqual(path.resolve('/project/.env'))
+  expect(fs.readFileSync).toHaveBeenCalled()
 })
 
 test('shouldnt do anything if global symbol is present', () => {
-  global[status] = true
+  global[envFile] = path.resolve('/project/.env')
   dotenv()
   expect(process.env).toEqual(processenv)
-  expect(debug).not.toHaveBeenCalled()
+  expect(fs.readFileSync).not.toHaveBeenCalled()
+})
+
+test('shouldnt do anything if global symbol is present (unless forced)', () => {
+  global[envFile] = path.resolve('/project/.env')
+  dotenv(true)
+  expect(process.env).toEqual(processenv)
+  expect(fs.readFileSync).toHaveBeenCalled()
 })
 
 describe(('error handling'), () => {
@@ -74,6 +86,21 @@ describe(('error handling'), () => {
   })
 })
 
+describe('clear', () => {
+  afterEach(() => {
+    fs.unlinkSync('/project/.env')
+  })
+
+  test('should clear existing envVars', () => {
+    fs.writeFileSync('/project/.env', fixtureFile('single'))
+    dotenv()
+    expect(process.env).toEqual({ ...{ A: '12', B: '12', C: '12' }, ...processenv })
+    fs.writeFileSync('/project/.env', fixtureFile('empty'))
+    dotenv(true)
+    expect(process.env).toEqual(processenv)
+  })
+})
+
 describe('parse', () => {
   afterEach(() => {
     fs.unlinkSync('/project/.env')
@@ -89,34 +116,39 @@ describe('parse', () => {
     fs.writeFileSync('/project/.env', fixtureFile('comment'))
     dotenv()
     expect(process.env).toEqual({ ...{ A: '#comment', B: '1', C: `12${os.EOL}` }, ...processenv })
-    expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
+    expect(debug).toHaveBeenLastCalledWith('added environment variable(s): A, B, C')
+    expect(global[envVars]).toEqual(['A', 'B', 'C'])
   })
 
   test('multiline', () => {
     fs.writeFileSync('/project/.env', fixtureFile('multiline'))
     dotenv()
     expect(process.env).toEqual({ ...{ A: `${os.EOL}12`, B: `${os.EOL}12`, C: '1' }, ...processenv })
-    expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
+    expect(debug).toHaveBeenLastCalledWith('added environment variable(s): A, B, C')
+    expect(global[envVars]).toEqual(['A', 'B', 'C'])
   })
 
   test('quotes', () => {
     fs.writeFileSync('/project/.env', fixtureFile('quotes'))
     dotenv()
     expect(process.env).toEqual({ ...{ A: `   12'  ${os.EOL}`, B: `   12" ${os.EOL}`, C: '  12  ' }, ...processenv })
-    expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
+    expect(debug).toHaveBeenLastCalledWith('added environment variable(s): A, B, C')
+    expect(global[envVars]).toEqual(['A', 'B', 'C'])
   })
 
   test('single', () => {
     fs.writeFileSync('/project/.env', fixtureFile('single'))
     dotenv()
     expect(process.env).toEqual({ ...{ A: '12', B: '12', C: '12' }, ...processenv })
-    expect(debug).toHaveBeenLastCalledWith('added environment variables: A, B, C')
+    expect(debug).toHaveBeenLastCalledWith('added environment variable(s): A, B, C')
+    expect(global[envVars]).toEqual(['A', 'B', 'C'])
   })
 })
 
 test('should not overwrite process.env values', () => {
   process.env['A'] = 12
-  fs.writeFileSync('/project/.env', 'A=1')
+  fs.writeFileSync('/project/.env', 'A=1\nB=12')
   dotenv()
+  expect(process.env['B']).toEqual('12')
   expect(process.env['A']).toEqual('12')
 })
