@@ -203,6 +203,22 @@ describe('merge', () => {
   test('supports arrays properly', () => {
     expect(merge({ foo: [4, 5, 6] }, { foo: { a: [1, 2, 3] } })).toEqual({ foo: { a: [1, 2, 3] } })
   })
+
+  test('merge should not alter objects to merge', () => {
+    let g = { foo: { bar: 'abc123' } }
+    const g0 = JSON.parse(JSON.stringify(g))
+
+    let l = { foo: { bar: 'baz' } }
+    const l0 = JSON.parse(JSON.stringify(l))
+
+    let e = { abcxyz: '123456' }
+    const e0 = JSON.parse(JSON.stringify(e))
+
+    merge(g, l, e)
+    expect(g0).toStrictEqual(g)
+    expect(l0).toStrictEqual(l)
+    expect(e0).toStrictEqual(e)
+  })
 })
 
 describe('mkdirp', () => {
