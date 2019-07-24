@@ -206,18 +206,18 @@ describe('merge', () => {
 
   test('merge should not alter objects to merge', () => {
     let g = { foo: { bar: 'abc123' } }
-    const g0 = JSON.parse(JSON.stringify(g))
-
     let l = { foo: { bar: 'baz' } }
-    const l0 = JSON.parse(JSON.stringify(l))
-
     let e = { abcxyz: '123456' }
-    const e0 = JSON.parse(JSON.stringify(e))
 
-    merge(g, l, e)
-    expect(g0).toStrictEqual(g)
-    expect(l0).toStrictEqual(l)
-    expect(e0).toStrictEqual(e)
+    expect(merge(g, l, e)).toStrictEqual({
+      'abcxyz': '123456',
+      'foo': {
+        'bar': 'baz'
+      }
+    })
+    expect(g.foo.bar).toEqual('abc123')
+    expect(l.foo.bar).toEqual('baz')
+    expect(e.abcxyz).toEqual('123456')
   })
 })
 
