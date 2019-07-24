@@ -77,6 +77,15 @@ let setValue = (key, value, obj) => {
   return result
 }
 
+const deepClone = (obj) => {
+  let _obj = {}
+  try {
+    _obj = JSON.parse(JSON.stringify(obj))
+  } catch (e) {
+  }
+  return _obj
+}
+
 /**
  * deep merge a collection of objs returning a new object.
  *
@@ -87,7 +96,7 @@ let setValue = (key, value, obj) => {
 const merge = (...objs) => {
   const isCloneable = obj => obj && obj.constructor === Object
 
-  const clone = (source, dest) => {
+  const _merge = (source, dest) => {
     if (source == null) {
       return dest
     }
@@ -96,13 +105,14 @@ const merge = (...objs) => {
       return source
     }
 
+    // cloneable
     for (let prop in source) {
-      dest[prop] = clone(source[prop], dest[prop])
+      dest[prop] = _merge(source[prop], dest[prop])
     }
     return dest
   }
 
-  return Array.from(objs).reduce((result, obj) => clone(obj, result), {})
+  return Array.from(objs).reduce((result, obj) => _merge(deepClone(obj), result), {})
 }
 
 /**
