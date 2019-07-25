@@ -14,6 +14,7 @@ const fs = require('fs')
 const path = require('path')
 const yaml = require('js-yaml')
 const hjson = require('hjson')
+const deepmerge = require('deepmerge')
 
 /**
  * support for mkdir -p.
@@ -85,24 +86,12 @@ let setValue = (key, value, obj) => {
  * @return {Object}
  */
 const merge = (...objs) => {
-  const isCloneable = obj => obj && obj.constructor === Object
+  // array merge strategy (replace)
+  const overwriteMerge = (destinationArray, sourceArray) => sourceArray
+  // filter out undefined arguments
+  const objArray = [...objs].filter(Boolean)
 
-  const clone = (source, dest) => {
-    if (source == null) {
-      return dest
-    }
-
-    if (!isCloneable(dest) || !isCloneable(source)) {
-      return source
-    }
-
-    for (let prop in source) {
-      dest[prop] = clone(source[prop], dest[prop])
-    }
-    return dest
-  }
-
-  return Array.from(objs).reduce((result, obj) => clone(obj, result), {})
+  return deepmerge.all(objArray, { arrayMerge: overwriteMerge })
 }
 
 /**
