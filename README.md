@@ -10,6 +10,8 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 -->
 
+# DEPRECATED, go to [https://github.com/adobe/aio-cna-core-config](https://github.com/adobe/aio-cna-core-config)
+
 aio-cli-config
 =======================
 
